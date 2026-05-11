@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Threat Reports</title>
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="main">
+
+<h1>
+Threat Intelligence Reports
+</h1>
+
+<table>
+
+<tr>
+
+<th>ID</th>
+<th>Device</th>
+<th>Attack</th>
+<th>Severity</th>
+<th>Confidence</th>
+<th>Country</th>
+<th>Time</th>
+
+</tr>
+
+{% for row in threats %}
+
+<tr>
+
+<td>{{ row[0] }}</td>
+<td>{{ row[1] }}</td>
+<td>{{ row[2] }}</td>
+<td>{{ row[3] }}</td>
+<td>{{ row[4] }}</td>
+<td>{{ row[5] }}</td>
+<td>{{ row[7] }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+</body>
+</html>

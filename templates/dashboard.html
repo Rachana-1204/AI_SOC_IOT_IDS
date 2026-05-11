@@ -1,0 +1,305 @@
+<!-- templates/dashboard.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>AI SOC Dashboard</title>
+
+<link rel="stylesheet"
+href="{{ url_for('static',
+filename='style.css') }}">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<!-- ================================================= -->
+<!-- SIDEBAR -->
+<!-- ================================================= -->
+
+<div class="sidebar">
+
+<div class="logo">
+
+AI SOC
+
+</div>
+
+<a href="#">
+Dashboard
+</a>
+
+<a href="/report">
+Threat Reports
+</a>
+
+<a href="/download-report">
+Download Report
+</a>
+
+</div>
+
+<!-- ================================================= -->
+<!-- MAIN -->
+<!-- ================================================= -->
+
+<div class="main">
+
+<!-- ================================================= -->
+<!-- TOPBAR -->
+<!-- ================================================= -->
+
+<div class="topbar">
+
+<div>
+
+<h1>
+Security Operations Center
+</h1>
+
+<p>
+AI-Powered Real-Time IoT Threat Detection
+</p>
+
+</div>
+
+<div class="top-actions">
+
+<div class="status">
+
+🟢 AI Engine Active
+
+</div>
+
+<a href="/download-report"
+class="report-btn">
+
+Download Report
+
+</a>
+
+</div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- KPI -->
+<!-- ================================================= -->
+
+<div class="stats">
+
+<div class="card">
+
+<h3>Total Traffic</h3>
+
+<h1 id="total">
+
+0
+
+</h1>
+
+</div>
+
+<div class="card attack">
+
+<h3>Threats</h3>
+
+<h1 id="attacks">
+
+0
+
+</h1>
+
+</div>
+
+<div class="card safe">
+
+<h3>Safe</h3>
+
+<h1 id="safe">
+
+0
+
+</h1>
+
+</div>
+
+<div class="card confidence">
+
+<h3>AI Confidence</h3>
+
+<h1>
+
+98%
+
+</h1>
+
+</div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- CHARTS -->
+<!-- ================================================= -->
+
+<div class="charts">
+
+<div class="panel">
+
+<h2>
+Threat Timeline
+</h2>
+
+<canvas id="lineChart"></canvas>
+
+</div>
+
+<div class="panel">
+
+<h2>
+Threat Distribution
+</h2>
+
+<canvas id="pieChart"></canvas>
+
+</div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- LIVE THREAT FEED -->
+<!-- ================================================= -->
+
+<div class="panel">
+
+<div class="panel-header">
+
+<h2>
+Live Threat Feed
+</h2>
+
+<div class="live-dot"></div>
+
+</div>
+
+<div id="live-feed"></div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- TERMINAL -->
+<!-- ================================================= -->
+
+<div class="panel">
+
+<h2>
+AI Threat Console
+</h2>
+
+<div class="terminal"
+id="terminal">
+
+Initializing AI Detection Engine...
+
+</div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- DEVICES -->
+<!-- ================================================= -->
+
+<div class="panel">
+
+<h2>
+Connected IoT Devices
+</h2>
+
+<div class="devices">
+
+<div class="device safe-device">
+
+📷 Smart Camera
+
+</div>
+
+<div class="device attack-device">
+
+🌡 Smart Thermostat
+
+</div>
+
+<div class="device safe-device">
+
+🔊 Smart Speaker
+
+</div>
+
+<div class="device attack-device">
+
+🔒 Smart Lock
+
+</div>
+
+<div class="device safe-device">
+
+💡 Smart Bulb
+
+</div>
+
+<div class="device safe-device">
+
+📺 Smart TV
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- SHAP -->
+<!-- ================================================= -->
+
+<div class="panel">
+
+<h2>
+AI Explainability Engine
+</h2>
+
+<div id="shap-box"></div>
+
+<div class="explain-box">
+
+<h3>
+Why AI Detected This Attack
+</h3>
+
+<p id="ai-reason">
+
+Waiting for AI analysis...
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="{{ url_for('static',
+filename='dashboard.js') }}">
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI SOC Dashboard</title>
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<!-- ================================================= -->
+<!-- SIDEBAR -->
+<!-- ================================================= -->
+
+<div class="sidebar">
+
+    <div class="logo">
+        AI SOC
+    </div>
+
+    <a href="#overview">Overview</a>
+    <a href="#threatfeed">Threat Feed</a>
+    <a href="#analytics">Analytics</a>
+    <a href="#shap">AI Explainability</a>
+    <a href="/download-report">Export Report</a>
+
+</div>
+
+<!-- ================================================= -->
+<!-- MAIN -->
+<!-- ================================================= -->
+
+<div class="main">
+
+<!-- TOPBAR -->
+
+<div class="topbar">
+
+    <div>
+
+        <h1>
+            Security Operations Center
+        </h1>
+
+        <p>
+            Real-Time AI Threat Intelligence Platform
+        </p>
+
+    </div>
+
+    <div class="status">
+        🟢 AI Engine Active
+    </div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- KPI -->
+<!-- ================================================= -->
+
+<div class="kpi-grid" id="overview">
+
+    <div class="kpi-card">
+
+        <span>Total Traffic</span>
+
+        <h1 id="totalTraffic">0</h1>
+
+    </div>
+
+    <div class="kpi-card attack">
+
+        <span>Threats Detected</span>
+
+        <h1 id="attackCount">0</h1>
+
+    </div>
+
+    <div class="kpi-card safe">
+
+        <span>Safe Traffic</span>
+
+        <h1 id="safeCount">0</h1>
+
+    </div>
+
+    <div class="kpi-card">
+
+        <span>AI Confidence</span>
+
+        <h1 id="confidence">98%</h1>
+
+    </div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- CHARTS -->
+<!-- ================================================= -->
+
+<div class="chart-grid" id="analytics">
+
+    <div class="panel">
+
+        <div class="panel-title">
+
+            Threat Timeline
+
+        </div>
+
+        <canvas id="lineChart"></canvas>
+
+    </div>
+
+    <div class="panel">
+
+        <div class="panel-title">
+
+            Attack Distribution
+
+        </div>
+
+        <canvas id="pieChart"></canvas>
+
+    </div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- LIVE THREAT FEED -->
+<!-- ================================================= -->
+
+<div class="panel" id="threatfeed">
+
+    <div class="panel-title">
+
+        Live Threat Feed
+
+    </div>
+
+    <div id="live-feed"></div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- AI EXPLAINABILITY -->
+<!-- ================================================= -->
+
+<div class="panel" id="shap">
+
+    <div class="panel-title">
+
+        AI Explainability Engine
+
+    </div>
+
+    <div class="explain-box">
+
+        <div class="explain-header">
+
+            AI Decision Engine Analysis
+
+        </div>
+
+        <div id="ai-reason">
+
+            Waiting for AI analysis...
+
+        </div>
+
+    </div>
+
+    <div class="shap-container">
+
+        <div id="shap-bars"></div>
+
+    </div>
+
+</div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- JAVASCRIPT -->
+<!-- ================================================= -->
+
+<script>
+
+let attackCount = 0;
+let safeCount = 0;
+
+// =====================================================
+// LINE CHART
+// =====================================================
+
+const lineChart = new Chart(
+
+document.getElementById('lineChart'),
+
+{
+    type: 'line',
+
+    data: {
+
+        labels: [],
+
+        datasets: [{
+
+            label: 'Detected Threats',
+
+            data: [],
+
+            borderColor: '#ff3b3b',
+
+            backgroundColor: 'rgba(255,59,59,0.2)',
+
+            tension: 0.4,
+
+            fill: true
+        }]
+    },
+
+    options: {
+
+        responsive: true,
+
+        plugins: {
+
+            legend: {
+
+                labels: {
+
+                    color: 'white'
+                }
+            }
+        },
+
+        scales: {
+
+            x: {
+
+                ticks: {
+
+                    color: 'white'
+                }
+            },
+
+            y: {
+
+                ticks: {
+
+                    color: 'white'
+                }
+            }
+        }
+    }
+});
+
+// =====================================================
+// PIE CHART
+// =====================================================
+
+const pieChart = new Chart(
+
+document.getElementById('pieChart'),
+
+{
+    type: 'doughnut',
+
+    data: {
+
+        labels: [
+
+            'Safe',
+            'Attack'
+        ],
+
+        datasets: [{
+
+            data: [0,0],
+
+            backgroundColor: [
+
+                '#22c55e',
+                '#ef4444'
+            ]
+        }]
+    },
+
+    options: {
+
+        plugins: {
+
+            legend: {
+
+                labels: {
+
+                    color: 'white'
+                }
+            }
+        }
+    }
+});
+
+// =====================================================
+// LOAD LIVE THREATS
+// =====================================================
+
+function loadTraffic(){
+
+fetch('/live')
+
+.then(res => res.json())
+
+.then(data => {
+
+let html = '';
+
+attackCount = 0;
+safeCount = 0;
+
+data.forEach(item => {
+
+if(item.status === 'Attack Detected'){
+
+attackCount++;
+
+}else{
+
+safeCount++;
+}
+
+let cls = item.status === 'Attack Detected'
+? 'danger'
+: 'safe';
+
+html += `
+
+<div class="threat-card ${cls}">
+
+    <div class="threat-top">
+
+        <div class="threat-name">
+
+            ${item.attack}
+
+        </div>
+
+        <div class="severity ${cls}">
+
+            ${item.severity}
+
+        </div>
+
+    </div>
+
+    <div class="threat-meta">
+
+        ${item.status}
+
+    </div>
+
+    <div class="threat-desc">
+
+        ${item.explanation}
+
+    </div>
+
+</div>
+`;
+});
+
+document.getElementById(
+'live-feed'
+).innerHTML = html;
+
+// COUNTS
+
+document.getElementById(
+'totalTraffic'
+).innerText = attackCount + safeCount;
+
+document.getElementById(
+'attackCount'
+).innerText = attackCount;
+
+document.getElementById(
+'safeCount'
+).innerText = safeCount;
+
+// CHARTS
+
+lineChart.data.labels.push(
+attackCount + safeCount
+);
+
+lineChart.data.datasets[0].data.push(
+attackCount
+);
+
+lineChart.update();
+
+pieChart.data.datasets[0].data = [
+safeCount,
+attackCount
+];
+
+pieChart.update();
+
+});
+}
+
+// =====================================================
+// LOAD SHAP
+// =====================================================
+
+function loadShap(){
+
+fetch('/shap')
+
+.then(res => res.json())
+
+.then(data => {
+
+let html = '';
+
+let topFeature = '';
+
+if(data.length > 0){
+
+topFeature = data[0].feature;
+
+document.getElementById(
+'ai-reason'
+).innerHTML = `
+
+AI flagged this traffic because
+<b>${topFeature}</b>
+showed highly abnormal behavior
+compared to learned safe IoT patterns.
+The AI models detected suspicious
+network activity consistent with
+potential cyber attacks.
+`;
+}
+
+data.forEach(item => {
+
+let width = item.importance * 100;
+
+if(width > 100){
+width = 100;
+}
+
+html += `
+
+<div class="shap-row">
+
+    <div class="shap-label">
+
+        ${item.feature}
+
+    </div>
+
+    <div class="shap-bar-bg">
+
+        <div class="shap-bar"
+        style="width:${width}%">
+
+        </div>
+
+    </div>
+
+    <div class="shap-score">
+
+        ${item.importance}
+
+    </div>
+
+</div>
+`;
+});
+
+document.getElementById(
+'shap-bars'
+).innerHTML = html;
+
+});
+}
+
+// =====================================================
+// AUTO REFRESH
+// =====================================================
+
+loadTraffic();
+loadShap();
+
+setInterval(loadTraffic, 3000);
+
+setInterval(loadShap, 5000);
+
+</script>
+
+</body>
+</html>
